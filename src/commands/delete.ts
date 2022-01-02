@@ -22,7 +22,8 @@ export default class Test extends Command{
         this.staffOnly = true
     }
     async run(ctx: CommandContext): Promise<any> {
-        let data = await ctx.sql.query(`SELECT * FROM referrals WHERE url=$1`, [encodeURI(ctx.arguments.get("url")?.value?.toString() ?? "a banana")]).catch(() => null)
+        let input = ctx.arguments.get("url")?.value?.toString() ?? ""
+        let data = await ctx.sql.query(`SELECT * FROM referrals WHERE url=$1 OR discord_id='${input}' LIMIT 1`, [encodeURI(input)]).catch(() => null)
         if(!data || !data?.rows?.length) return ctx.error("Unable to find that referral")
         
         await ctx.sql.query(`DELETE FROM referrals WHERE url=$1`, [encodeURI(ctx.arguments.get("url")?.value?.toString() ?? "a banana")]).catch(() => null)
