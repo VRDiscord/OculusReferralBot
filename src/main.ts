@@ -39,6 +39,15 @@ const client = new OculusReferralClient({
 ])})
 
 
+let connection = new pg.Client({
+    user: process.env["DB_USERNAME"]!,
+    host: process.env["DB_IP"]!,
+    database: process.env["DB_NAME"]!,
+    password: process.env["DB_PASSWORD"]!,
+    port: Number(process.env["DB_PORT"]!),
+})
+
+
 readdirSync("./dist/commands")
 .forEach(c => {
     const cmd = new ((require(`./commands/${c}`)).default)()
@@ -53,19 +62,7 @@ readdirSync("./dist/buttons")
     client.buttons.set(cmd.name, cmd)
 })
 
-setInterval(() => {
-
-}, 1000*60*2.5)
-
 client.login(token)
-
-let connection = new pg.Client({
-    user: process.env["DB_USERNAME"]!,
-    host: process.env["DB_IP"]!,
-    database: process.env["DB_NAME"]!,
-    password: process.env["DB_PASSWORD"]!,
-    port: Number(process.env["DB_PORT"]!),
-})
 connection.connect()
 
 const keepAlive = async () => {

@@ -32,9 +32,11 @@ export default class Test extends Command{
     }
     async run(ctx: CommandContext): Promise<any> {
         if(ctx.interaction.channel?.type !== "GUILD_TEXT") return ctx.error("You can only use this command in a TextChannel")
+
         let embed = new MessageEmbed()
         .setColor("AQUA")
         .setDescription(`To get a referral URL for the Oculus store click the button below\nrepresenting your region.`)
+        
         ctx.reply({content: "Done", ephemeral: true})
         ctx.interaction.channel.send({embeds: [embed], components})
     }

@@ -18,7 +18,6 @@ export default class Test extends Command{
     async run(ctx: CommandContext): Promise<any> {
         let id = ctx.member.id
         let data = await ctx.sql.query(`SELECT * FROM referrals WHERE discord_id='${id}'`).catch(() => null)
-        console.log(data)
         if(!data || !data?.rows?.length) return ctx.error("Unable to find any set up referral links for you")
 
         let embed = new MessageEmbed()
