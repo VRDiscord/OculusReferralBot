@@ -33,6 +33,6 @@ export default class Test extends Command{
         .setTitle(`Referral found out of ${count.rows[0].count} entries`)
         .setDescription(`**Submitter** <@${data.rows[0].discord_id}> (\`${data.rows[0].discord_id}\`)\n**URL** ${decodeURI(data.rows[0].url)}\n**Region** ${data.rows[0].region}\n**Uses** ${data.rows[0].uses}`)
 
-        return ctx.reply({embeds: [embed]})
+        return ctx.reply({embeds: [embed], ephemeral: true})
     }
 }
