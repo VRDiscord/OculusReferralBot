@@ -36,11 +36,11 @@ export default class Test extends Button {
         let embed = new MessageEmbed()
             .setColor("AQUA")
             .setTitle(`Your new referral URL for ${region.toUpperCase()}`)
-            
-        
-        if(region === "us") embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\nIf the link didn't work press the red button\n\nIf you're done or selected the wrong region click the green button.`)
-        else embed.setDescription("non-us")
-        
+
+
+        if (region === "us") embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\nPlease click the above link, if it didn't work please try another link and report this as a bad link with this the red button. \n\n You can also mention the user directly with <@${row.discord_id}> if you want to speak to them.`)
+        else embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\n**Please note you do need to add the user on Facebook**\n\n If you want to tell them who you are or to accept it, you can mention them <@${row.discord_id}> \n\nIf you rather try another link, or have not heard back from the user please click the red button.`)
+
         ctx.reply({
             content: decodeURI(row.url),
             embeds: [embed],
@@ -48,24 +48,24 @@ export default class Test extends Button {
         })
 
         let log = new MessageEmbed()
-        .setTitle(`Referral reported`)
-        .setColor("#ED4245")
-        .addFields([
-            {name: `**Reported URL**`, value: decodeURI(reported)},
-            {name: `**Region**`, value: region, inline: true},
-            {name: `**Uses**`, value: row.uses, inline: true},
-        ])
-        
+            .setTitle(`Referral reported`)
+            .setColor("#ED4245")
+            .addFields([
+                { name: `**Reported URL**`, value: decodeURI(reported) },
+                { name: `**Region**`, value: region, inline: true },
+                { name: `**Seen**`, value: row.uses, inline: true },
+            ])
+
         let log2 = new MessageEmbed()
             .setTitle(`New referral requested`)
             .setColor("#EB459E")
             .setDescription(`${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
             .addFields([
-                {name: `**URL**`, value: decodeURI(row.url)},
-                {name: `**URL owner**`, value: `<@${row.discord_id}> (\`${row.discord_id}\`)`},
-                {name: `**Thread**`, value: `<#${ctx.interaction.channelId}>`, inline: true},
-                {name: `**Region**`, value: row.region, inline: true},
-                {name: `**Uses**`, value: row.uses, inline: true},
+                { name: `**URL**`, value: decodeURI(row.url) },
+                { name: `**URL owner**`, value: `<@${row.discord_id}> (\`${row.discord_id}\`)` },
+                { name: `**Thread**`, value: `<#${ctx.interaction.channelId}>`, inline: true },
+                { name: `**Region**`, value: row.region, inline: true },
+                { name: `**Seen**`, value: row.uses, inline: true },
             ])
         ctx.log([log, log2])
         await ctx.sql.query(`UPDATE referrals SET uses='${Number(row.uses ?? 0) + 1}' WHERE discord_id='${row.discord_id}'`).catch(() => null)
