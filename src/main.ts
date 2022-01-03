@@ -47,7 +47,6 @@ let connection = new pg.Client({
     port: Number(process.env["DB_PORT"]!),
 })
 
-
 readdirSync("./dist/commands")
 .forEach(c => {
     const cmd = new ((require(`./commands/${c}`)).default)()
@@ -63,7 +62,7 @@ readdirSync("./dist/buttons")
 })
 
 client.login(token)
-connection.connect()
+connection.connect().catch(console.error)
 
 const keepAlive = async () => {
     let res = await connection.query("SELECT COUNT(*) FROM referrals").catch(() => null)
@@ -71,7 +70,7 @@ const keepAlive = async () => {
     //await connection.query("CREATE TABLE referrals (url varchar(255) not null, region varchar(6) not null, discord_id varchar(31) not null primary key, uses varchar(255) not null)")
     if(!res) {
         await connection.end().catch(() => null);
-        await connection.connect();
+        await connection.connect().catch(() => null);
     }
 }
 
@@ -79,6 +78,16 @@ keepAlive()
 
 setInterval( keepAlive, 1000*60*60)
 
+connection.on("error", (e) => {
+    console.error(e.message)
+    const reconnect = setInterval(async () => {
+        let res = await connection.query("SELECT COUNT(*) FROM referrals").catch(() => null)    
+        if(!res) {
+            await connection.end().catch(() => null);
+            await connection.connect().catch(() => null);
+        } else clearInterval(reconnect)
+    }, 1000*60*2)
+})
 
 client.on("interactionCreate", async (interaction): Promise<any> => {
     if(interaction.channel?.type === "DM" && interaction.type !== "PING" && interaction.type !== "APPLICATION_COMMAND_AUTOCOMPLETE")
