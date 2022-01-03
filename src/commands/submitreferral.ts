@@ -6,7 +6,7 @@ import { CommandContext } from "../classes/commandContext";
 const commandData: ApplicationCommandData = {
     type: ApplicationCommandTypes.CHAT_INPUT,
     name: "submitreferral",
-    description: "Let's you submit a referral link",
+    description: "Let's you submit a Oculus referral link",
     options: [{
         type: "STRING",
         required: true,
@@ -52,7 +52,7 @@ export default class Test extends Command {
             )
 
             ctx.log(`${ctx.member.user.tag} (\`${userid}\`) added their referral url for US: <${url}>`)
-            ctx.reply({ content: "Your referral url has been added to the pool and will be randomly chosen", ephemeral: true })
+            ctx.reply({ content: "Your referral has been added to the pool and will be randomly chosen", ephemeral: true })
         } else {
             if (!/^https?:\/\/www.((facebook.com\/(profile.php\?id\=)?[A-Za-z0-9._-]+)|(oculus.com\/((s\/[A-Za-z0-9]+\/?)|(referrals\/link\/[A-Za-z0-9]+\/?))))$/.test(url))
                 return ctx.error("Please give a valid Non-US referral url")
@@ -63,7 +63,7 @@ export default class Test extends Command {
             )
 
             ctx.log(`${ctx.member.user.tag} (\`${userid}\`) added their referral url for non-US: <${url}>`)
-            ctx.reply({ content: "Your referral url has been added to the pool and will be randomly chosen", ephemeral: true })
+            ctx.reply({ content: "Your referral has been added to the pool and will be randomly chosen", ephemeral: true })
         }
     }
 }

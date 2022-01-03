@@ -29,14 +29,14 @@ export default class Test extends Button {
         let region = ctx.customId.split("_")[1] ?? "non-us"
         let data = await ctx.sql.query(`SELECT * FROM referrals WHERE region='${region}' ORDER BY RANDOM() LIMIT 1`).catch(() => null)
 
-        if (!data) return ctx.error("No referral URL has been found for your region")
+        if (!data) return ctx.error("No referral has been found for your region")
         if (ctx.interaction.channel?.type === "DM") return null
         if (ctx.interaction.channel?.isThread()) return ctx.error("You can't use this button in Threads")
 
         let channel = (ctx.interaction.channel as TextChannel)
 
         let thread = await channel.threads.create({
-            name: `Referral ${region} ${ctx.interaction.member?.user.username}`,
+            name: `Referral - ${region} - ${ctx.interaction.member?.user.username}`,
             autoArchiveDuration: 60,
             type: (ctx.interaction.guild?.premiumSubscriptionCount ?? 0) >= 7 ? "GUILD_PRIVATE_THREAD" : "GUILD_PUBLIC_THREAD"
         }).catch(() => null)
@@ -48,9 +48,9 @@ export default class Test extends Button {
         let embed = new MessageEmbed()
             .setColor("AQUA")
             .setTitle(`Your referral URL for ${region.toUpperCase()}`)
-            .setDescription(`**Submitter** <@${data.rows[0].discord_id}> (\`${data.rows[0].discord_id}\`)\n**URL** ${decodeURI(data.rows[0].url)}\n\nIf the link didn't work press the red button\n\nIf you're done or selected the wrong region click the green button.`)
+            .setDescription(`**Submitter** <@${data.rows[0].discord_id}> (\`${data.rows[0].discord_id}\`)\n**URL** ${decodeURI(data.rows[0].url)}\n\nIf the link didn't work, please try tagging the user <@${data.rows[0].discord_id}> \n\nIf you spoke with the user, or rather try another link please click the red button.`)
 
-        ctx.reply({ content: `The referral URL has been posted in <#${thread.id}>`, ephemeral: true })
+        ctx.reply({ content: `The referral is waiting for you in <#${thread.id}>`, ephemeral: true })
         await thread.members.add(ctx.interaction.member?.user.id!)
 
         thread.send({

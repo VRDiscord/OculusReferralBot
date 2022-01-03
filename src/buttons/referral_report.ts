@@ -27,7 +27,7 @@ export default class Test extends Button {
     async run(ctx: ButtonContext): Promise<any> {
         let region = ctx.customId.split("_")[2] ?? "non-us"
         let data = await ctx.sql.query(`SELECT * FROM referrals WHERE region='${region}' ORDER BY RANDOM() LIMIT 1`).catch(() => null)
-        if (!data) return ctx.error("No other referral URL has been found for your region")
+        if (!data) return ctx.error("No other referral has been found for your region")
         if (ctx.interaction.channel?.type === "DM") return null
         if (!ctx.interaction.channel?.isThread()) return ctx.error("You can't use this button in Threads")
 
