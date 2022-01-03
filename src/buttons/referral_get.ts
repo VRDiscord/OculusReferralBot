@@ -51,8 +51,11 @@ export default class Test extends Button {
         let embed = new MessageEmbed()
             .setColor("AQUA")
             .setTitle(`Your referral URL for ${region.toUpperCase()}`)
-            .setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\nIf the link didn't work, please try tagging the user <@${row.discord_id}> \n\nIf you spoke with the user, or rather try another link please click the red button.`)
-
+            
+        
+        if(region === "us" embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\nIf the link didn't work, please try tagging the user <@${row.discord_id}> \n\nIf you spoke with the user, or rather try another link please click the red button.`)
+        else embed.setDescription("non-us")
+                                                                                     
         ctx.reply({ content: `The referral is waiting for you in <#${thread.id}>`, ephemeral: true })
         await thread.members.add(ctx.interaction.member?.user.id!)
 
