@@ -1,4 +1,4 @@
-import { MessageEmbed, NewsChannel, TextChannel } from "discord.js";
+import { Collection, MessageEmbed, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
 import { Button } from "../classes/button";
 import { ButtonContext } from "../classes/buttonContext";
 
@@ -35,13 +35,15 @@ export default class Test extends Button {
         if (ctx.interaction.channel?.isThread()) return ctx.error("You can't use this button in Threads")
 
         let channel = (ctx.interaction.channel as TextChannel)
-        let threads = await channel.threads.fetchActive().catch(() => null)
-        if(threads?.threads.find(t => t.name.includes(ctx.interaction.member?.user.username ?? ""))) return ctx.error(`You already have a thread open (<#${threads?.threads.find(t => t.name.includes(ctx.interaction.member?.user.username ?? ""))!.id}>).\nGo there or close it first to open a new one.`, {codeblock: false})
+        let threads = await channel.threads.fetchActive(false).catch(() => null)
+        let tempthread = threads?.threads.filter(t => t.name.includes(ctx.interaction.member?.user.username ?? "a thread name that cant be found")) ?? new Collection()
+        await Promise.all(tempthread.map(async (t: ThreadChannel) => await t.members.fetch().catch(() => null)))
+        if(tempthread?.find(t => t.members.cache.has(ctx.interaction.member?.user.id!))) return ctx.error(`You already have a thread open (<#${threads?.threads.find(t => t.members.cache.has(ctx.interaction.member?.user.id ?? ""))!.id}>).\nGo there or close it first to open a new one.`, {codeblock: false})
 
         let thread = await channel.threads.create({
             name: `Referral - ${region} - ${ctx.interaction.member?.user.username}`,
             autoArchiveDuration: 60,
-            type: (ctx.interaction.guild?.premiumSubscriptionCount ?? 0) >= 7 ? "GUILD_PRIVATE_THREAD" : "GUILD_PUBLIC_THREAD"
+            type: (ctx.interaction.guild?.premiumSubscriptionCount ?? 0) >= 7 ? "GUILD_PRIVATE_THREAD" : "GUILD_PUBLIC_THREAD",
         }).catch(() => null)
         if (!thread) return ctx.error("The max amount of threads for this guild has been reached")
 
@@ -65,7 +67,19 @@ export default class Test extends Button {
             components: components(region)
         })
 
-        ctx.log(`${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`) got the referral url <${data!.rows[0].url}> submitted by ${data!.rows[0].discord_id}`)
+
+        let log = new MessageEmbed()
+            .setTitle(`Referral requested`)
+            .setColor("#57F287")
+            .setDescription(`${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+            .addFields([
+                {name: `**URL**`, value: decodeURI(row.url)},
+                {name: `**URL owner**`, value: `<@${row.discord_id}> (\`${row.discord_id}\`)`},
+                {name: `**Thread**`, value: `<#${thread.id}>`, inline: true},
+                {name: `**Region**`, value: row.region, inline: true},
+                {name: `**Uses**`, value: row.uses, inline: true},
+            ])
+        ctx.log(log)
         await ctx.sql.query(`UPDATE referrals SET uses='${Number(row.uses ?? 0) + 1}' WHERE discord_id='${row.discord_id}'`).catch(() => null)
     }
 }

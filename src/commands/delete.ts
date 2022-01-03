@@ -28,7 +28,18 @@ export default class Test extends Command{
         
         await ctx.sql.query(`DELETE FROM referrals WHERE url=$1`, [encodeURI(ctx.arguments.get("url")?.value?.toString() ?? "a banana")]).catch(() => null)
         
-        ctx.log(`${ctx.member.user.tag} (\`${ctx.member.id}\`) (STAFF) removed a referral for ${data!.rows[0].region}: <${decodeURI(data!.rows[0].url)}>`)
+
+        let log = new MessageEmbed()
+        .setTitle(`Referral force removed`)
+        .setColor("#FEE75C")
+        .setDescription(`**Staff** ${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+        .addFields([
+            {name: `**URL**`, value: decodeURI(data.rows[0].url)},
+            {name: `**URL owner**`, value: `<@${data.rows[0].discord_id}> (\`${data.rows[0].discord_id}\`)`},
+            {name: `**Region**`, value: data.rows[0].region, inline: true},
+            {name: `**Uses**`, value: data.rows[0].uses, inline: true},
+        ])
+        ctx.log(log)
         ctx.reply({content: `The referral url has been removed`, ephemeral: true})
     }
 }

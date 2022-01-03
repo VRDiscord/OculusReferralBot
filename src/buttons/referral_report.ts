@@ -47,8 +47,27 @@ export default class Test extends Button {
             components: components(region)
         })
 
-        ctx.log(`${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`) reported the referral URL <${reported}> for **${region}**`)
-
+        let log = new MessageEmbed()
+        .setTitle(`Referral reported`)
+        .setColor("#ED4245")
+        .addFields([
+            {name: `**Reported URL**`, value: decodeURI(reported)},
+            {name: `**Region**`, value: region, inline: true},
+            {name: `**Uses**`, value: row.uses, inline: true},
+        ])
+        
+        let log2 = new MessageEmbed()
+            .setTitle(`New referral requested`)
+            .setColor("#EB459E")
+            .setDescription(`${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+            .addFields([
+                {name: `**URL**`, value: decodeURI(row.url)},
+                {name: `**URL owner**`, value: `<@${row.discord_id}> (\`${row.discord_id}\`)`},
+                {name: `**Thread**`, value: `<#${ctx.interaction.channelId}>`, inline: true},
+                {name: `**Region**`, value: row.region, inline: true},
+                {name: `**Uses**`, value: row.uses, inline: true},
+            ])
+        ctx.log([log, log2])
         await ctx.sql.query(`UPDATE referrals SET uses='${Number(row.uses ?? 0) + 1}' WHERE discord_id='${row.discord_id}'`).catch(() => null)
     }
 }

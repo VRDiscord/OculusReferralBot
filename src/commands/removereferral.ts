@@ -22,7 +22,16 @@ export default class Test extends Command{
 
         await ctx.sql.query(`DELETE FROM referrals WHERE discord_id='${id}'`).catch(() => null)
         
-        ctx.log(`${ctx.member.user.tag} (\`${ctx.member.id}\`) removed their referral for ${data!.rows[0].region}: <${decodeURI(data!.rows[0].url)}>`)
+        let log = new MessageEmbed()
+        .setTitle(`Referral removed`)
+        .setColor("#FEE75C")
+        .setDescription(`**User** ${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+        .addFields([
+            {name: `**URL**`, value: decodeURI(data.rows[0].url)},
+            {name: `**Region**`, value: data.rows[0].region, inline: true},
+            {name: `**Uses**`, value: data.rows[0].uses, inline: true},
+        ])
+        ctx.log(log)
         ctx.reply({content: `Your referral url ${decodeURI(data.rows[0].url)} for **${data.rows[0].region}** with **${data.rows[0].uses}** uses has been deleted.`, ephemeral: true})
     }
 }
