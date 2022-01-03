@@ -9,8 +9,8 @@ const commandData: ApplicationCommandData = {
     description: "Shows your submitted referral url"
 }
 
-export default class Test extends Command{
-    constructor(){
+export default class Test extends Command {
+    constructor() {
         super(commandData)
         this.name = commandData.name
         this.staffOnly = false
@@ -18,13 +18,13 @@ export default class Test extends Command{
     async run(ctx: CommandContext): Promise<any> {
         let id = ctx.member.id
         let data = await ctx.sql.query(`SELECT * FROM referrals WHERE discord_id='${id}'`).catch(() => null)
-        if(!data || !data?.rows?.length) return ctx.error("Unable to find any set up referral links for you")
+        if (!data || !data?.rows?.length) return ctx.error("Unable to find any set up referral links for you")
 
         let embed = new MessageEmbed()
-        .setColor("AQUA")
-        .setTitle(`Referral ${data.rows[0].region.toUpperCase()}`)
-        .setDescription(`**URL** ${decodeURI(data.rows[0].url)}\n**Uses** ${data.rows[0].uses}`)
+            .setColor("AQUA")
+            .setTitle(`Referral ${data.rows[0].region.toUpperCase()}`)
+            .setDescription(`**URL** ${decodeURI(data.rows[0].url)}\n**Seen** ${data.rows[0].uses}`)
 
-        ctx.reply({embeds: [embed], ephemeral: true})
+        ctx.reply({ embeds: [embed], ephemeral: true })
     }
 }
