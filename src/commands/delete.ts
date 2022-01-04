@@ -15,8 +15,8 @@ const commandData: ApplicationCommandData = {
     }]
 }
 
-export default class Test extends Command{
-    constructor(){
+export default class Test extends Command {
+    constructor() {
         super(commandData)
         this.name = commandData.name
         this.staffOnly = true
@@ -24,22 +24,22 @@ export default class Test extends Command{
     async run(ctx: CommandContext): Promise<any> {
         let input = ctx.arguments.get("url")?.value?.toString() ?? ""
         let data = await ctx.sql.query(`SELECT * FROM referrals WHERE url=$1 OR discord_id='${input}' LIMIT 1`, [encodeURI(input)]).catch(() => null)
-        if(!data || !data?.rows?.length) return ctx.error("Unable to find that referral")
-        
+        if (!data || !data?.rows?.length) return ctx.error("Unable to find that referral")
+
         await ctx.sql.query(`DELETE FROM referrals WHERE url=$1`, [encodeURI(ctx.arguments.get("url")?.value?.toString() ?? "a banana")]).catch(() => null)
-        
+
 
         let log = new MessageEmbed()
-        .setTitle(`Referral force removed`)
-        .setColor("#FEE75C")
-        .setDescription(`**Staff** ${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
-        .addFields([
-            {name: `**URL**`, value: decodeURI(data.rows[0].url)},
-            {name: `**URL owner**`, value: `<@${data.rows[0].discord_id}> (\`${data.rows[0].discord_id}\`)`},
-            {name: `**Region**`, value: data.rows[0].region, inline: true},
-            {name: `**Uses**`, value: data.rows[0].uses, inline: true},
-        ])
+            .setTitle(`Referral force removed`)
+            .setColor("#FEE75C")
+            .setDescription(`**Staff** ${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+            .addFields([
+                { name: `**URL**`, value: decodeURI(data.rows[0].url) },
+                { name: `**URL owner**`, value: `<@${data.rows[0].discord_id}> (\`${data.rows[0].discord_id}\`)` },
+                { name: `**Region**`, value: data.rows[0].region, inline: true },
+                { name: `**Seen**`, value: data.rows[0].uses, inline: true },
+            ])
         ctx.log(log)
-        ctx.reply({content: `The referral url has been removed`, ephemeral: true})
+        ctx.reply({ content: `The referral url has been removed`, ephemeral: true })
     }
 }
