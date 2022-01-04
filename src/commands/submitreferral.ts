@@ -53,7 +53,7 @@ export default class Test extends Command {
 
             ctx.reply({ content: "Your referral has been added to the pool and will be randomly chosen", ephemeral: true })
         } else {
-            if (!/^https?:\/\/www.((facebook.com\/(profile.php\?id\=)?[A-Za-z0-9._-]+)|(oculus.com\/((s\/[A-Za-z0-9]+\/?)|(referrals\/link\/[A-Za-z0-9]+\/?))))$/.test(url))
+            if (!/^https?:\/\/www.((facebook.com\/(profile.php\?id\=)?[A-Za-z0-9._-]+\/?)|(oculus.com\/((s\/[A-Za-z0-9]+\/?)|(referrals\/link\/[A-Za-z0-9]+\/?))))$/.test(url))
                 return ctx.error("Please give a valid Non-US referral url")
 
             await ctx.sql.query(
@@ -64,15 +64,15 @@ export default class Test extends Command {
             ctx.reply({ content: "Your referral has been added to the pool and will be randomly chosen", ephemeral: true })
         }
 
-        
+
         let log = new MessageEmbed()
-        .setTitle(`Referral added`)
-        .setColor("#5865F2")
-        .setDescription(`**User** ${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
-        .addFields([
-            {name: `**URL**`, value: url, inline: true},
-            {name: `**Region**`, value: ctx.arguments.get("region")?.value?.toString() ?? "non-us", inline: true},
-        ])
+            .setTitle(`Referral added`)
+            .setColor("#5865F2")
+            .setDescription(`**User** ${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+            .addFields([
+                { name: `**URL**`, value: url, inline: true },
+                { name: `**Region**`, value: ctx.arguments.get("region")?.value?.toString() ?? "non-us", inline: true },
+            ])
         ctx.log(log)
     }
 }
