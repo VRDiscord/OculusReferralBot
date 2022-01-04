@@ -14,20 +14,27 @@ export default class Test extends Command {
         super(commandData)
         this.name = commandData.name
         this.staffOnly = false
+        this.description = `This shows the help command explaining this.`
     }
     async run(ctx: CommandContext): Promise<any> {
+
+        let fields = ctx.client.commands
+        .filter(c => !!c.description)
+        .map(c => ({
+            name: c.name,
+            value: c.description!
+        }))
+
+        fields.push({
+            name: "How do I request a referral?",
+            value: "If you are a new user __needing to be referred__, please check the <#927288276673523782> channel for more information."
+        })
 
         let embed = new MessageEmbed()
             .setColor("AQUA")
             .setTitle(`Command Help`)
             .setDescription(`Below you can see a list of all commands and their descriptions.`)
-            .addFields(
-                { name: '/removereferral', value: 'This will allow you to remove your Oculus/Meta referral link. \n It will also tell you how many times it has been seen.' },
-                { name: '/submitreferral', value: 'This will allow you to submit your Oculus/Meta referral link. \n When typing this command, you need to select US or Non-US and then enter your link in the "referral-url" section. \n Once you submit this, it is immediately put into the randomized pool.' },
-                { name: '/viewreferral', value: 'This will show your submitted referral, as well as how many times it has been seen.' },
-                { name: '/help', value: 'This shows the help command explaining this.', },
-                { name: 'How do I request a referral?', value: 'If you are a new user __needing to be referred__, please check the <#927288276673523782> channel for more information.', },
-            )
+            .addFields(fields)
         ctx.reply({ embeds: [embed], ephemeral: true })
     }
 }

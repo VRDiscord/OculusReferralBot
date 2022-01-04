@@ -32,6 +32,9 @@ export default class Test extends Command {
         super(commandData)
         this.name = commandData.name
         this.staffOnly = false
+        this.description = `This will allow you to submit your Oculus/Meta referral link.
+When typing this command, you need to select US or Non-US and then enter your link in the "referral-url" section.
+Once you submit this, it is immediately put into the randomized pool.`
     }
     async run(ctx: CommandContext): Promise<any> {
 

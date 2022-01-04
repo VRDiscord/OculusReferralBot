@@ -14,6 +14,8 @@ export default class Test extends Command {
         super(commandData)
         this.name = commandData.name
         this.staffOnly = false
+        this.description = `This will allow you to remove your Oculus/Meta referral link.
+It will also tell you how many times it has been seen.`
     }
     async run(ctx: CommandContext): Promise<any> {
         let id = ctx.member.id

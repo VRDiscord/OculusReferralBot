@@ -14,6 +14,7 @@ export default class Test extends Command {
         super(commandData)
         this.name = commandData.name
         this.staffOnly = false
+        this.description = `This will show your submitted referral, as well as how many times it has been seen.`
     }
     async run(ctx: CommandContext): Promise<any> {
         let id = ctx.member.id
