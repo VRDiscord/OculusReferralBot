@@ -39,7 +39,7 @@ export default class Test extends Button {
 
 
         if (region === "us") embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\nPlease click the above link, if it didn't work please try another link and report this as a bad link with this the red button. \n\n You can also mention the user directly with <@${row.discord_id}> if you want to speak to them, it will bring them into this channel.`)
-        else embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\n**Please note you do need to add the user on Facebook**\n\n If you want to tell them who you are or to accept it, you can mention them with <@${row.discord_id}> and it will bring them into this channel.\n\nIf you rather try another link, or have not heard back from the user in 30 minutes please click the red button.`)
+        else embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\n**Please note you must add the user on Facebook**\n\n If you want to tell them who you are or to accept it, you can mention them with <@${row.discord_id}> and it will bring them into this channel.\n\nIf you rather try another link, or have not heard back from the user in 30 minutes please click the red button.`)
 
         ctx.reply({
             content: decodeURI(row.url),
