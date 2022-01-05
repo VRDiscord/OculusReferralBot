@@ -2,20 +2,33 @@ import { Collection, MessageEmbed, NewsChannel, TextChannel, ThreadChannel } fro
 import { Button } from "../classes/button";
 import { ButtonContext } from "../classes/buttonContext";
 
-const components = (region: string) => [{
-    type: 1,
-    components: [{
-        type: 2,
-        custom_id: "referral_done",
-        label: "I'm finished",
-        style: 3
-    }, {
-        type: 2,
-        custom_id: `referral_report_${region}`,
-        label: "This URL didn't work",
-        style: 4
+const components = (region: string, adduser?: string) => {
+    let comps = [{
+        type: 1,
+        components: [{
+            type: 2,
+            custom_id: "referral_done",
+            label: "I'm finished",
+            style: 3
+        }, {
+            type: 2,
+            custom_id: `referral_report_${region}`,
+            label: "This URL didn't work",
+            style: 4
+        }]
     }]
-}]
+
+    if(adduser) 
+    comps[0].components.push({
+        type: 2,
+        custom_id: `add_user_${adduser}`,
+        label: "Add the owner of the URL",
+        style: 1
+    })
+    return comps
+}
+
+
 
 
 export default class Test extends Button {
@@ -65,7 +78,7 @@ export default class Test extends Button {
         thread.send({
             content: decodeURI(row.url),
             embeds: [embed],
-            components: components(region)
+            components: components(region, row.accepts_help_request ? row.discord_id : undefined)
         })
 
 

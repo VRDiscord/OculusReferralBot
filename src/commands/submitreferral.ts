@@ -24,6 +24,11 @@ const commandData: ApplicationCommandData = {
         required: true,
         description: "The referral url",
         name: "referral-url"
+    }, {
+        type: "BOOLEAN",
+        required: false,
+        description: "Whether the member can add you to the thread if they need help",
+        name: "add-for-help"
     }]
 }
 
@@ -40,6 +45,7 @@ Once you submit this, it is immediately put into the randomized pool.`
 
         let url = ctx.arguments.get("referral-url")?.value?.toString() ?? ""
         let userid = ctx.interaction.member?.user.id
+        let add_for_help = ctx.arguments.get("add-for-help")?.value
         let data = await ctx.sql.query(`SELECT * FROM referrals WHERE discord_id='${ctx.member.id}'`).catch(() => null)
         if (data?.rows?.length || !data) return ctx.error("You already have a referral URL set up")
         let existing = await ctx.sql.query(`SELECT * FROM referrals WHERE url=$1`, [encodeURI(url)]).catch(() => null)
@@ -50,7 +56,7 @@ Once you submit this, it is immediately put into the randomized pool.`
                 return ctx.error("Please give a valid US referral url")
 
             await ctx.sql.query(
-                `INSERT INTO referrals (url, region, discord_id, uses) VALUES ($1, 'us', '${userid}', '0')`,
+                `INSERT INTO referrals (url, region, discord_id, uses${add_for_help ? `, accepts_help_request` : ""}) VALUES ($1, 'us', '${userid}', '0'${add_for_help ? `, ${add_for_help}`.toUpperCase() : ""})`,
                 [encodeURI(url)]
             )
 
@@ -60,7 +66,7 @@ Once you submit this, it is immediately put into the randomized pool.`
                 return ctx.error("Please give a valid Non-US referral url")
 
             await ctx.sql.query(
-                `INSERT INTO referrals (url, region, discord_id, uses) VALUES ($1, 'non-us', '${userid}', '0')`,
+                `INSERT INTO referrals (url, region, discord_id, uses${add_for_help ? `, accepts_help_request` : ""}) VALUES ($1, 'non-us', '${userid}', '0'${add_for_help ? `, ${add_for_help}`.toUpperCase() : ""})`,
                 [encodeURI(url)]
             )
 
@@ -74,8 +80,10 @@ Once you submit this, it is immediately put into the randomized pool.`
             .setDescription(`**User** <@${ctx.interaction.member?.user.id}> (${ctx.member.user.tag} \`${ctx.interaction.member?.user.id}\`)`)
             .addFields([
                 { name: `**URL**`, value: url, inline: true },
-                { name: `**Region**`, value: ctx.arguments.get("region")?.value?.toString() ?? "non-us", inline: true },
+                { name: `**Region**`, value: ctx.arguments.get("region")?.value?.toString() ?? "non-us", inline: true }
             ])
+
+        if(add_for_help) log.addField("**Accepts help request**", `${add_for_help}`)
         ctx.log(log)
     }
 }
