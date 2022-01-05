@@ -32,7 +32,7 @@ export default class Test extends Command {
         let log = new MessageEmbed()
             .setTitle(`Referral force removed`)
             .setColor("#FEE75C")
-            .setDescription(`**Staff** ${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+            .setDescription(`**Staff** <@${ctx.interaction.member?.user.id}> (${ctx.member.user.tag} \`${ctx.interaction.member?.user.id}\`)`)
             .addFields([
                 { name: `**URL**`, value: decodeURI(data.rows[0].url) },
                 { name: `**URL owner**`, value: `<@${data.rows[0].discord_id}> (\`${data.rows[0].discord_id}\`)` },
