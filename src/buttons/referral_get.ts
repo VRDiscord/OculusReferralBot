@@ -18,13 +18,13 @@ const components = (region: string, adduser?: string) => {
         }]
     }]
 
-    if(adduser) 
-    comps[0].components.push({
-        type: 2,
-        custom_id: `add_user_${adduser}`,
-        label: "Add the owner of the URL",
-        style: 1
-    })
+    if (adduser)
+        comps[0].components.push({
+            type: 2,
+            custom_id: `add_user_${adduser}`,
+            label: "Add the owner of the URL",
+            style: 1
+        })
     return comps
 }
 
@@ -68,8 +68,8 @@ export default class Test extends Button {
             .setTitle(`Your referral URL for ${region.toUpperCase()}`)
 
 
-        if (region === "us") embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\nPlease click the above link, if it didn't work please try another link and report this as a bad link with this the red button. \n\n You can also mention the user directly with <@${row.discord_id}> if you want to speak to them, it will bring them into this channel.`)
-        else embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\n**Please note you must add the user on Facebook**\n\n If you want to tell them who you are or to accept it, you can mention them with <@${row.discord_id}> and it will bring them into this channel.\n\nIf you rather try another link, or have not heard back from the user in 30 minutes please click the red button.`)
+        if (region === "us") embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\nPlease click the above link, if it didn't work please ask the owner of the referral for help with the "add the owner of the URL" button.\n\n **This will bring the user who submitted the link into this channel.** \n\nIf you cannot contact them due to the button being missing and being unable to mention them, then press the red button for another link. `)
+        else embed.setDescription(`**Submitter** <@${row.discord_id}> (\`${row.discord_id}\`)\n**URL** ${decodeURI(row.url)}\n\n**Please note you must add the user on Facebook**\n\n If you want to tell them who you are or to accept it, you can press "add the owner of the URL" button and it will bring them into this channel.\n\nIf you cannot contact them due to the button being missing and being unable to mention them, then press the red button for another link. `)
 
 
         ctx.reply({ content: `The referral is waiting for you in <#${thread.id}>`, ephemeral: true })

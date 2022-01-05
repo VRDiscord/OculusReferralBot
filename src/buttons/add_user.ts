@@ -11,20 +11,20 @@ export default class Test extends Button {
         this.staffOnly = false
     }
     async run(ctx: ButtonContext): Promise<any> {
-        if(!ctx.interaction.channel?.isThread()) return null
+        if (!ctx.interaction.channel?.isThread()) return null
         let id = ctx.customId.split("_")[2] ?? ctx.interaction.member?.user.id
 
         let res = await ctx.interaction.channel.members.add(id).catch(() => null)
-        if(!res) return ctx.error("Unable to add owner of the URL")
+        if (!res) return ctx.error("Unable to add owner of the URL")
 
         let buttons = ctx.interaction.message.components! as MessageActionRow[]
         buttons[0].components.splice(2, 1)
 
-        ctx.update({components: buttons})
+        ctx.update({ components: buttons })
         let payload = {
-            content: `The owner of the URL <@${id}> has been added`
+            content: `The owner of the referral <@${id}> has been added`
         };
         //using this janky solution since discord.js doesn't allow you to send followups after replying for no reason
-        (ctx.client as any).api.webhooks(ctx.interaction.applicationId, ctx.interaction.token).post({data: payload})
+        (ctx.client as any).api.webhooks(ctx.interaction.applicationId, ctx.interaction.token).post({ data: payload })
     }
 }
