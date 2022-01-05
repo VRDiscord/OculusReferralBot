@@ -46,7 +46,7 @@ Once you submit this, it is immediately put into the randomized pool.`
         if (existing?.rows?.length) return ctx.error("The URL has already been submitted")
 
         if (ctx.arguments.get("region")?.value?.toString() === "us") {
-            if (!/^https?:\/\/www.oculus.com\/referrals\/link\/[A-Za-z0-9]+\/?$/.test(url))
+            if (!/^https?:\/\/www.oculus.com\/referrals\/link\/[A-Za-z0-9_-.]+\/?$/.test(url))
                 return ctx.error("Please give a valid US referral url")
 
             await ctx.sql.query(
@@ -56,7 +56,7 @@ Once you submit this, it is immediately put into the randomized pool.`
 
             ctx.reply({ content: "Your referral has been added to the pool and will be randomly chosen", ephemeral: true })
         } else {
-            if (!/^https?:\/\/www.((facebook.com\/(profile.php\?id\=)?[A-Za-z0-9._-]+\/?)|(oculus.com\/((s\/[A-Za-z0-9]+\/?)|(referrals\/link\/[A-Za-z0-9]+\/?))))$/.test(url))
+            if (!/^https?:\/\/www.((facebook.com\/(profile.php\?id\=)?[A-Za-z0-9._-]+\/?)|(oculus.com\/((s\/[A-Za-z0-9-_.]+\/?)|(referrals\/link\/[A-Za-z0-9-_.]+\/?))))$/.test(url))
                 return ctx.error("Please give a valid Non-US referral url")
 
             await ctx.sql.query(
