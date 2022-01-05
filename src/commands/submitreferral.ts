@@ -46,7 +46,7 @@ Once you submit this, it is immediately put into the randomized pool.`
         if (existing?.rows?.length) return ctx.error("The URL has already been submitted")
 
         if (ctx.arguments.get("region")?.value?.toString() === "us") {
-            if (!/^https?:\/\/www.oculus.com\/referrals\/link\/[A-Za-z0-9_-]+\/?$/.test(url))
+            if (!/^https?:\/\/www.oculus.com\/referrals\/link\/[A-Za-z0-9]+\/?$/.test(url))
                 return ctx.error("Please give a valid US referral url")
 
             await ctx.sql.query(
@@ -71,7 +71,7 @@ Once you submit this, it is immediately put into the randomized pool.`
         let log = new MessageEmbed()
             .setTitle(`Referral added`)
             .setColor("#5865F2")
-            .setDescription(`**User** ${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+            .setDescription(`**User** <@${ctx.interaction.member?.user.id}> (${ctx.member.user.tag} \`${ctx.interaction.member?.user.id}\`)`)
             .addFields([
                 { name: `**URL**`, value: url, inline: true },
                 { name: `**Region**`, value: ctx.arguments.get("region")?.value?.toString() ?? "non-us", inline: true },

@@ -27,7 +27,7 @@ It will also tell you how many times it has been seen.`
         let log = new MessageEmbed()
             .setTitle(`Referral removed`)
             .setColor("#FEE75C")
-            .setDescription(`**User** ${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+            .setDescription(`**User** <@${ctx.interaction.member?.user.id}> (${ctx.member.user.tag} \`${ctx.interaction.member?.user.id}\`)`)
             .addFields([
                 { name: `**URL**`, value: decodeURI(data.rows[0].url) },
                 { name: `**Region**`, value: data.rows[0].region, inline: true },

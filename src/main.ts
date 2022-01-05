@@ -68,6 +68,7 @@ const keepAlive = async () => {
     let res = await connection.query("SELECT COUNT(*) FROM referrals").catch(() => null)
     //let res = await connection.query("DROP TABLE referrals")
     //await connection.query("CREATE TABLE referrals (url varchar(255) not null, region varchar(6) not null, discord_id varchar(31) not null primary key, uses varchar(255) not null)")
+    //await connection.query("ALTER TABLE referrals ADD COLUMN accepts_help_request boolean")
     if(!res) {
         await connection.end().catch(() => null);
         await connection.connect().catch(() => null);

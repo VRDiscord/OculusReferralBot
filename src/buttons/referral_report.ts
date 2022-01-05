@@ -59,7 +59,7 @@ export default class Test extends Button {
         let log2 = new MessageEmbed()
             .setTitle(`New referral requested`)
             .setColor("#EB459E")
-            .setDescription(`${ctx.member.user.tag} (\`${ctx.interaction.member?.user.id}\`)`)
+            .setDescription(`<@${ctx.interaction.member?.user.id}> (${ctx.member.user.tag} \`${ctx.interaction.member?.user.id}\`)`)
             .addFields([
                 { name: `**URL**`, value: decodeURI(row.url) },
                 { name: `**URL owner**`, value: `<@${row.discord_id}> (\`${row.discord_id}\`)` },
