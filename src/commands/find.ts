@@ -1,5 +1,6 @@
 import { ApplicationCommandData, MessageEmbed, TextChannel } from "discord.js";
 import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { QueryResult } from "pg";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 
@@ -10,8 +11,7 @@ const commandData: ApplicationCommandData = {
     options: [{
         type: "STRING",
         name: "query",
-        description: "The referral URL or user id",
-        required: true
+        description: "The referral URL or user id"
     }]
 }
 
@@ -22,16 +22,24 @@ export default class Test extends Command{
         this.staffOnly = true
     }
     async run(ctx: CommandContext): Promise<any> {
-        let input = ctx.arguments.get("query")?.value?.toString() ?? ""
-        let data = await ctx.sql.query(`SELECT * FROM referrals WHERE url=$1 OR discord_id='${input}' LIMIT 1`, [encodeURI(input)]).catch(() => null)
-        if(!data || !data?.rows?.length) return ctx.error("Unable to find that referral")
-
-        let count = await ctx.sql.query(`SELECT COUNT(*) FROM referrals`).catch(() => ({rows: [{count: "0"}]}))
+        let input = ctx.arguments.get("query")?.value?.toString()
+        let data: QueryResult<any> | undefined
+        let count: QueryResult<any> | undefined
+        
+        if(input) {
+            data = await ctx.sql.query(`SELECT * FROM referrals WHERE url=$1 OR discord_id='${input}' LIMIT 1`, [encodeURI(input)]).catch(() => undefined)
+        }else {
+            count = await ctx.sql.query(`SELECT COUNT(*) FROM referrals`).catch(() => ({rows: [{count: "0"}]} as any))
+        }
+        
         
         let embed = new MessageEmbed()
         .setColor("AQUA")
-        .setTitle(`Referral found out of ${count.rows[0].count} entries`)
-        .setDescription(`**Submitter** <@${data.rows[0].discord_id}> (\`${data.rows[0].discord_id}\`)\n**URL** ${decodeURI(data.rows[0].url)}\n**Region** ${data.rows[0].region}\n**Uses** ${data.rows[0].uses}`)
+        .setTitle(`Referral search`)
+        if((!data || !data?.rows?.length) && input) embed.setDescription(`No referrals found with the query \`${input}\``)
+        else if (!input) embed.setDescription(`There are currently ${count!.rows[0].count} referrals`)
+        else if (data) embed.setDescription(`**Submitter** <@${data!.rows[0].discord_id}> (\`${data!.rows[0].discord_id}\`)\n**URL** ${decodeURI(data!.rows[0].url)}\n**Region** ${data!.rows[0].region}\n**Uses** ${data!.rows[0].uses}`)
+        else embed.setDescription("Something went wrong")
 
         return ctx.reply({embeds: [embed], ephemeral: true})
     }
