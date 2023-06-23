@@ -10,6 +10,7 @@ import {
     UserContextMenuCommandInteraction
 } from "discord.js";
 import { DiscordBotClient } from "./classes/client";
+import { Pool } from "pg";
 
 export enum StoreTypes {
     COMMANDS,
@@ -26,7 +27,7 @@ export interface StoreInitOptions {
 
 export interface CommandInitOptions {
     name: string,
-    command_data: RESTPostAPIApplicationCommandsJSONBody,
+    command_data?: RESTPostAPIApplicationCommandsJSONBody,
     staff_only: boolean,
 }
 
@@ -39,7 +40,8 @@ export interface CustomIDInitOptions {
 
 export interface BaseContextInitOptions {
     interaction: Interaction,
-    client: DiscordBotClient
+    client: DiscordBotClient,
+    database: Pool
 }
 
 export interface CommandContextInitOptions extends BaseContextInitOptions {

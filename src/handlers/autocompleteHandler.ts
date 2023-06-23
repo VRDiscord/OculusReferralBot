@@ -1,11 +1,12 @@
 import { AutocompleteInteraction } from "discord.js";
 import { AutocompleteContext } from "../classes/autocompleteContext";
 import { DiscordBotClient } from "../classes/client";
+import { Pool } from "pg";
 
-export async function handleAutocomplete(interaction: AutocompleteInteraction, client: DiscordBotClient) {
+export async function handleAutocomplete(interaction: AutocompleteInteraction, client: DiscordBotClient, database: Pool) {
     const command = await client.commands.getCommand(interaction).catch(() => null)
     if(!command) return;
-    const context = new AutocompleteContext({interaction, client})
+    const context = new AutocompleteContext({interaction, client, database})
     if(!interaction.inGuild())
         return await context.error()
     if(!interaction.channel)

@@ -18,8 +18,10 @@
   "homepage": "https://github.com/ZeldaFan0225/Stable_Horde_Discord#readme",
   "dependencies": {
     "@thunder04/supermap": "^3.0.2",
+    "@types/pg": "^8.10.2",
     "centra": "^2.5.0",
-    "discord.js": "^14.8.0"
+    "discord.js": "^14.8.0",
+    "pg": "^8.11.0"
   },
   "devDependencies": {
     "@types/centra": "^2.2.0",
