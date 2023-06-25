@@ -35,8 +35,9 @@ client.login(process.env["DISCORD_TOKEN"])
 client.on("ready", async () => {
     connection.connect()
     .then(async () => {
-        await connection.query("CREATE TABLE IF NOT EXISTS games (index SERIAL, game_id VARCHAR(100) PRIMARY KEY, name text not null, platform text not null)")
-        await connection.query("CREATE TABLE IF NOT EXISTS game_referrals (index SERIAL, game_id VARCHAR(100) NOT NULL, user_id VARCHAR(100) NOT NULL, discord_user_id VARCHAR(100) NOT NULL, uses int NOT NULL DEFAULT 0, added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)")
+        await connection.query("CREATE TABLE IF NOT EXISTS apps (index SERIAL, app_id VARCHAR(100) PRIMARY KEY, name text not null, platform text not null)")
+        await connection.query("CREATE TABLE IF NOT EXISTS app_referrals (index SERIAL, app_id VARCHAR(100) NOT NULL, user_id VARCHAR(100) NOT NULL, discord_user_id VARCHAR(100) NOT NULL, uses int NOT NULL DEFAULT 0, added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)")
+        await connection.query("CREATE TABLE IF NOT EXISTS device_referrals (index SERIAL, user_id VARCHAR(100) PRIMARY KEY, discord_user_id VARCHAR(100) NOT NULL, uses int NOT NULL DEFAULT 0, added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)")
         console.log("Database ready")
     })
 

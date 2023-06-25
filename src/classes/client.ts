@@ -13,7 +13,7 @@ export class DiscordBotClient extends Client {
     config: Config
 	cache: SuperMap<string, any>
 	regexes: {
-		GAME_NAME: RegExp,
+		APP_NAME: RegExp,
 		APP_LINK: RegExp,
 		DEVICE_LINK: RegExp
 	}
@@ -30,7 +30,7 @@ export class DiscordBotClient extends Client {
 		})
         this.loadConfig()
 		this.regexes = {
-			GAME_NAME: /\<title id\=\"pageTitle\"\>([\d\D]+) on Oculus (Quest|Rift) \| Oculus\<\/title\>/,
+			APP_NAME: /\<title id\=\"pageTitle\"\>([\d\D]+) on Oculus (Quest|Rift) \| Oculus\<\/title\>/,
 			APP_LINK: /https\:\/\/www\.oculus\.com\/appreferrals\/[a-zA-Z0-9]+\/\d+\/?/,
 			DEVICE_LINK: /https\:\/\/www\.oculus\.com\/referrals\/link\/[a-zA-Z0-9]+\/?/
 		}
@@ -48,9 +48,9 @@ export class DiscordBotClient extends Client {
 		else return `/${name}`
 	}
 
-	async fetchGame(id: string, database: Pool) {
-		const game = await database.query("SELECT * FROM games WHERE game_id=$1", [id]).then(res => res.rows[0]).catch(console.error)
-		if(game?.name && game?.platform) return {name: game.name, platform: game.platform}
+	async fetchApp(id: string, database: Pool) {
+		const app = await database.query("SELECT * FROM apps WHERE app_id=$1", [id]).then(res => res.rows[0]).catch(console.error)
+		if(app?.name && app?.platform) return {name: app.name, platform: app.platform}
 
 		const f = await fetch(`https://www.oculus.com/deeplink/?action=view&path=app/${id}/`, {
 			"headers": {
@@ -61,9 +61,9 @@ export class DiscordBotClient extends Client {
 		if(f.status !== 200) return null
 		const res = await f.text()
 		if(!res) return;
-		const data = res.match(this.regexes.GAME_NAME)
+		const data = res.match(this.regexes.APP_NAME)
 		if(!data?.at(1) || !data?.at(2)) return null
-		else await database.query("INSERT INTO games (game_id, name, platform) VALUES ($1, $2, $3) ON CONFLICT (game_id) DO NOTHING", [id, data.at(1), data.at(2)?.toLowerCase()]).catch(console.error)
+		else await database.query("INSERT INTO apps (app_id, name, platform) VALUES ($1, $2, $3) ON CONFLICT (app_id) DO NOTHING", [id, data.at(1), data.at(2)?.toLowerCase()]).catch(console.error)
 		return {
 			name: data?.at(1),
 			platform: data?.at(2)?.toLowerCase()
@@ -83,5 +83,16 @@ export class DiscordBotClient extends Client {
 			[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
 		}
 		return array;
+	}
+
+	generateTable(table: (string | number)[][]) {
+		let rotated = table.slice()
+		rotated = rotated[0]!.map((_, index) => rotated.map(row => row[index]!).reverse())
+
+		const width_columns = rotated.map(r => r.sort((a, b) => b.toString().length - a.toString().length)[0]?.toString().length || 0)
+
+		const result = table.map(v => v.map((a, i) => a.toString().padStart(width_columns[i] || 0, " ")).join(" | ")).join("\n")
+
+		return result
 	}
 }
