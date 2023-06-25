@@ -13,7 +13,7 @@ export default class extends Command {
         super({
             name: "exportreferrals",
             command_data: command_data.toJSON(),
-            staff_only: false,
+            staff_only: true,
         })
     }
 
