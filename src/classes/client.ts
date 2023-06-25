@@ -91,8 +91,10 @@ export class DiscordBotClient extends Client {
 
 		const width_columns = rotated.map(r => r.sort((a, b) => b.toString().length - a.toString().length)[0]?.toString().length || 0)
 
-		const result = table.map(v => v.map((a, i) => a.toString().padStart(width_columns[i] || 0, " ")).join(" | ")).join("\n")
+		const rows = table.map(v => v.map((a, i) => a.toString().padStart(width_columns[i] || 0, " ")).join(" | "))
 
-		return result
+		rows.splice(1, 0, "-".repeat(rows[0]?.length || 0))
+
+		return rows.join("\n")
 	}
 }
