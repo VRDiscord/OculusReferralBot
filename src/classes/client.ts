@@ -30,7 +30,7 @@ export class DiscordBotClient extends Client {
 		})
         this.loadConfig()
 		this.regexes = {
-			APP_NAME: /\<title id\=\"pageTitle\"\>([\d\D]+) on Oculus (Quest|Rift) \| Oculus\<\/title\>/,
+			APP_NAME: /\<title id\=\"pageTitle\"\>([\d\D]+) on Oculus (Quest( \d)?|Rift) \| Oculus\<\/title\>/,
 			APP_LINK: /https\:\/\/www\.oculus\.com\/appreferrals\/[a-zA-Z0-9]+\/\d+\/?/,
 			DEVICE_LINK: /https\:\/\/www\.oculus\.com\/referrals\/link\/[a-zA-Z0-9]+\/?/
 		}
@@ -60,6 +60,7 @@ export class DiscordBotClient extends Client {
 		});
 		if(f.status !== 200) return null
 		const res = await f.text()
+		console.log(res)
 		if(!res) return;
 		const data = res.match(this.regexes.APP_NAME)
 		if(!data?.at(1) || !data?.at(2)) return null
