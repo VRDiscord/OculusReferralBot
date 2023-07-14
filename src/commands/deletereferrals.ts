@@ -11,7 +11,7 @@ const command_data = new SlashCommandBuilder()
         new SlashCommandUserOption()
         .setName("user")
         .setDescription("The user whose referrals you want to remove")
-        .setRequired(true)
+        .setRequired(false)
     )
 
 export default class extends Command {
@@ -19,12 +19,15 @@ export default class extends Command {
         super({
             name: "deletereferrals",
             command_data: command_data.toJSON(),
-            staff_only: true,
+            staff_only: false,
         })
     }
 
     override async run(ctx: CommandContext): Promise<any> {
-        const id = ctx.interaction.options.getUser("user", true).id
+        const id = ctx.interaction.options.getUser("user")?.id || ctx.interaction.user.id
+
+        if(id !== ctx.interaction.user.id && !ctx.is_staff) return ctx.error({error: "You need to be staff to remove other users referrals"})
+
         await ctx.database.query("DELETE FROM app_referrals WHERE discord_user_id=$1", [id]).catch(console.error) || []
         await ctx.database.query("DELETE FROM device_referrals WHERE discord_user_id=$1", [id]).catch(console.error) || []
 
