@@ -60,7 +60,6 @@ export class DiscordBotClient extends Client {
 		});
 		if(f.status !== 200) return null
 		const res = await f.text()
-		console.log(res)
 		if(!res) return;
 		const data = res.match(this.regexes.APP_NAME)
 		if(!data?.at(1) || !data?.at(2)) return null

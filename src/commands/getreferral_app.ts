@@ -69,7 +69,7 @@ export default class extends Command {
             case "app": {
                 const apps = await context.database.query("SELECT * FROM apps WHERE position($1 in LOWER(name)) > 0 OR app_id=$1", [focused.value]).then(res => res.rows).catch(console.error)
 
-                return context.interaction.respond(apps?.map(g => ({name: `${g.platform.toUpperCase()} | ${g.name}`, value: g.app_id})).slice(0, 25) || [])
+                return context.interaction.respond(apps?.map(g => ({name: `${g.platform[0].toUpperCase()}${g.platform.slice(1).toLowerCase()} | ${g.name}`, value: g.app_id})).slice(0, 25) || [])
             }
         }
     }
