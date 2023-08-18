@@ -19,7 +19,7 @@ export default class extends Command {
 
     override async run(ctx: CommandContext): Promise<any> {
         const devices = await ctx.database.query("SELECT * FROM device_referrals WHERE discord_user_id=$1", [ctx.interaction.user.id]).then(res => res.rows).catch(console.error) || []
-        const apps = await  ctx.database.query("SELECT app_referrals.user_id, app_referrals.app_id, apps.name, app_referrals.uses, app_referrals.added_at FROM app_referrals LEFT JOIN apps ON app_referrals.app_id=apps.app_id AND app_referrals.discord_user_id=$1", [ctx.interaction.user.id]).then(res => res.rows).catch(console.error) || []
+        const apps = await  ctx.database.query("SELECT app_referrals.user_id, app_referrals.app_id, apps.name, app_referrals.uses, app_referrals.added_at, app_referrals.discord_user_id FROM app_referrals JOIN apps ON app_referrals.app_id=apps.app_id AND app_referrals.discord_user_id=$1", [ctx.interaction.user.id]).then(res => res.rows).catch(console.error) || []
 
         const description = `## Devices\n${devices.map((d) => `\` ${d.uses} \` [${d.user_id}](https://www.oculus.com/referrals/link/${d.user_id}/)`).join("\n") || "none"}\n\n## Apps\n${apps.filter(a => a.name).map((a) => `\` ${a.uses} \` [${a.name}](https://www.oculus.com/appreferrals/${a.user_id}/${a.app_id}/)`).join("\n") || "none"}`
 

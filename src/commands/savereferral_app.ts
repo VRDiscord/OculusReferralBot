@@ -50,6 +50,7 @@ export default class extends Command {
         await ctx.interaction.deferReply({ephemeral: true})
 
         const app = await ctx.client.fetchApp(app_id, ctx.database)
+        console.log(app)
         if(!app) return ctx.error({error: "Unable to find referred app"})
         const exists = await ctx.client.referralExists(link)
         if(!exists) return ctx.error({error: "This referral does not exist"})
