@@ -25,7 +25,7 @@ export default class extends Command {
 
         if(description.length > 4000) {
             const file = new AttachmentBuilder(Buffer.from(`Devices\n\n${devices.map((d) => `${d.uses.toString().padStart(3, "0")} | ${d.user_id} | https://www.oculus.com/referrals/link/${d.user_id}/`).join("\n") || "none"}\n\n\nApps\n\n${apps.map((a) => `${a.uses.toString().padStart(3, "0")} | ${a.user_id} | ${a.name} | https://www.oculus.com/appreferrals/${a.user_id}/${a.app_id}/`).join("\n") || "none"}`), {name: "referrals.txt"})
-            return ctx.interaction.reply({content: "Attached below.", files: [file]})
+            return ctx.interaction.reply({content: "Attached below.", files: [file], ephemeral: true})
         }
 
         const embed = new EmbedBuilder({
