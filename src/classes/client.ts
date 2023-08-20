@@ -30,7 +30,7 @@ export class DiscordBotClient extends Client {
 		})
         this.loadConfig()
 		this.regexes = {
-			APP_NAME: /\<title id\=\"pageTitle\"\>([\d\D]+) on Oculus (Quest( \d)?|Rift) \| Oculus\<\/title\>/,
+			APP_NAME: /\<title id\=\"pageTitle\"\>([\d\D]+) on Oculus (Quest( \d)?|Rift|Go) \| Oculus\<\/title\>/,
 			APP_LINK: /https\:\/\/www\.oculus\.com\/appreferrals\/[a-zA-Z0-9_]+\/\d+\/?/,
 			DEVICE_LINK: /https\:\/\/www\.oculus\.com\/referrals\/link\/[a-zA-Z0-9_]+\/?/
 		}
