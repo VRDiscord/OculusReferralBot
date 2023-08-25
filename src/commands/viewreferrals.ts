@@ -34,6 +34,6 @@ export default class extends Command {
             description
         })
 
-        return ctx.interaction.reply({embeds: [embed]})
+        return ctx.interaction.reply({embeds: [embed], ephemeral: true})
     }
 }
