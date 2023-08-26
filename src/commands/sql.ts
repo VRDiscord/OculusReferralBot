@@ -40,7 +40,7 @@ export default class extends Command {
         let query = ctx.interaction.options.getString("query", true)
         const args = ctx.interaction.options.data.filter(c => c.name.includes("argument_")).map(o => o.value)
         let res = await ctx.database.query(query, args || []).catch(e => e)
-        const text = JSON.stringify(res)
+        const text = JSON.stringify(res, null, 2)
         if(text.length > 1900) {
             let file = new AttachmentBuilder(Buffer.from(text), {name: "result.json"})
             ctx.interaction.reply({files: [file], content: "Result attached below"})

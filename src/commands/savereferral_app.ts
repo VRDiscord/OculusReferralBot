@@ -16,6 +16,30 @@ const command_data = new SlashCommandBuilder()
             .setDescription("The URL to save")
             .setRequired(true)
         )
+        .addStringOption(
+            new SlashCommandStringOption()
+            .setName("platform")
+            .setDescription("The platform the URL is for")
+            .setRequired(true)
+            .addChoices(
+                {
+                    name: "Quest",
+                    value: "quest"
+                },
+                {
+                    name: "Rift",
+                    value: "rift"
+                },
+                {
+                    name: "Go",
+                    value: "go"
+                },
+                {
+                    name: "Gear VR",
+                    value: "gear-vr"
+                }
+            )
+        )
     )
     .addSubcommand(
         new SlashCommandSubcommandBuilder()
@@ -40,6 +64,7 @@ export default class extends Command {
 
     override async run(ctx: CommandContext): Promise<any> {
         const link = ctx.interaction.options.getString("url", true)
+        const platform = ctx.interaction.options.getString("platform", true)
         if(!ctx.client.regexes.APP_LINK.test(link)) return ctx.error({error: "That is not a valid app referral link"})
 
         const [username, app_id] = link.split("/").slice(4, 6)
@@ -49,7 +74,7 @@ export default class extends Command {
         if(referral) return ctx.interaction.reply({ephemeral: true, content: `This referral has already been added <t:${Math.round(new Date(referral.added_at).getTime()/1000)}:R>`})
         await ctx.interaction.deferReply({ephemeral: true})
 
-        const app = await ctx.client.fetchApp(app_id, ctx.database)
+        const app = await ctx.client.fetchApp(app_id, platform, ctx.database)
         console.log(app)
         if(!app) return ctx.error({error: "Unable to find referred app"})
         const exists = await ctx.client.referralExists(link)
