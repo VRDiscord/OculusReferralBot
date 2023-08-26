@@ -30,7 +30,7 @@ export class DiscordBotClient extends Client {
 		})
         this.loadConfig()
 		this.regexes = {
-			APP_NAME: /\<title id\=\"pageTitle\"\>([\d\D]+) on Oculus (Quest( \d)?|Rift|Go) \| Oculus\<\/title\>/,
+			APP_NAME: /\<title id\=\"pageTitle\"\>(.+) on Oculus (Quest( \d)?|Rift|Go) \| Oculus\<\/title\>/,
 			APP_LINK: /https\:\/\/www\.oculus\.com\/appreferrals\/[a-zA-Z0-9_]+\/\d+\/?/,
 			DEVICE_LINK: /https\:\/\/www\.oculus\.com\/referrals\/link\/[a-zA-Z0-9_]+\/?/
 		}
@@ -58,16 +58,28 @@ export class DiscordBotClient extends Client {
 			},
 			"method": "GET"
 		});
+		console.log(f)
 		if(f.status !== 200) return null
 		const res = await f.text()
+		console.log(res)
 		if(!res) return;
 		const data = res.match(this.regexes.APP_NAME)
 		if(!data?.at(1) || !data?.at(2)) return null
-		else await database.query("INSERT INTO apps (app_id, name, platform) VALUES ($1, $2, $3) ON CONFLICT (app_id) DO NOTHING", [id, data.at(1), data.at(2)?.toLowerCase()]).catch(console.error)
+		else await database.query("INSERT INTO apps (app_id, name, platform) VALUES ($1, $2, $3) ON CONFLICT (app_id) DO NOTHING", [id, this.unEscape(data.at(1)), data.at(2)?.toLowerCase()]).catch(console.error)
 		return {
 			name: data?.at(1),
 			platform: data?.at(2)?.toLowerCase()
 		}
+	}
+
+	unEscape(htmlStr?: string) {
+		let str = htmlStr || ""
+		str = str.replace(/&lt;/g , "<");	 
+		str = str.replace(/&gt;/g , ">");     
+		str = str.replace(/&quot;/g , "\"");  
+		str = str.replace(/&#39;/g , "\'");   
+		str = str.replace(/&amp;/g , "&");
+		return str;
 	}
 
 	async referralExists(url: string) {
