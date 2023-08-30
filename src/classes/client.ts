@@ -30,7 +30,7 @@ export class DiscordBotClient extends Client {
 		})
         this.loadConfig()
 		this.regexes = {
-			APP_NAME: /\<title\>(.+) on (Meta|Oculus) (Quest( \d)?|Rift|Go) \| (Oculus|Rift) VR [gG]ames\<\/title\>/,
+			APP_NAME: /\<title\>(.+) on (Meta|Oculus) (Quest( \d)?|Rift|Go) \| (Oculus|Rift|Quest) VR [gG]ames\<\/title\>/,
 			APP_LINK: /https\:\/\/www\.oculus\.com\/appreferrals\/[a-zA-Z0-9_]+\/\d+\/?/,
 			DEVICE_LINK: /https\:\/\/www\.oculus\.com\/referrals\/link\/[a-zA-Z0-9_]+\/?/
 		}
@@ -71,15 +71,15 @@ export class DiscordBotClient extends Client {
 			}
 		}
 
-		console.log(`https://www.oculus.com/experiences/${platform}/${id}`)
+		if(this.config.dev) console.log(`https://www.oculus.com/experiences/${platform}/${id}`)
 		const f = await fetch(`https://www.oculus.com/experiences/${platform}/${id}`, options);
-		console.log(f)
+		if(this.config.dev) console.log(f)
 		if(f.status !== 200) return null
 		const res = await f.text()
-		console.log(res)
+		if(this.config.dev) console.log(res)
 		if(!res) return;
 		const data = this.regexes.APP_NAME.exec(res)
-		console.log(data)
+		if(this.config.dev) console.log(data)
 		if(!data?.at(1) || !data?.at(3)) return null
 		else await database.query("INSERT INTO apps (app_id, name, platform) VALUES ($1, $2, $3) ON CONFLICT (app_id) DO NOTHING", [id, this.unEscape(data.at(1)), data.at(3)?.toLowerCase()]).catch(console.error)
 		return {
