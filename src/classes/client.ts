@@ -31,8 +31,8 @@ export class DiscordBotClient extends Client {
         this.loadConfig()
 		this.regexes = {
 			APP_NAME: /\<title\>(.+) on (Meta|Oculus) (Quest( \d)?|Rift|Go) \| (Oculus|Rift|Quest) VR [gG]ames\<\/title\>/,
-			APP_LINK: /https\:\/\/www\.oculus\.com\/appreferrals\/[a-zA-Z0-9_]+\/\d+\/?/,
-			DEVICE_LINK: /https\:\/\/www\.oculus\.com\/referrals\/link\/[a-zA-Z0-9_]+\/?/
+			APP_LINK: /https\:\/\/www\.(oculus|meta)\.com\/appreferrals\/[a-zA-Z0-9_]+\/\d+\/?/,
+			DEVICE_LINK: /https\:\/\/www\.(oculus|meta)\.com\/referrals\/link\/[a-zA-Z0-9_]+\/?/
 		}
 	}
 
