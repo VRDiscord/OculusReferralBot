@@ -45,7 +45,7 @@ client.on("ready", async () => {
     client.components.loadClasses().catch(console.error)
     client.contexts.loadClasses().catch(console.error)
     client.modals.loadClasses().catch(console.error)
-    client.user?.setPresence({activities: [{type: ActivityType.Listening, name: "to Webhead singing in the shower"}], status: PresenceUpdateStatus.DoNotDisturb, })
+    client.user?.setPresence({activities: [{type: ActivityType.Watching, name: "your referral links"}], status: PresenceUpdateStatus.DoNotDisturb, })
     console.log(`Ready`)
     await client.application?.commands.set([...client.commands.createPostBody(), ...client.contexts.createPostBody()]).catch(console.error)
 })
