@@ -16,6 +16,11 @@ export class BaseContext{
     }
 
     get is_staff() {
-        return Array.isArray(this.interaction.member?.roles) ? this.interaction.member?.roles.some(r => this.client.config.staff_roles?.includes(r)) : this.interaction.member?.roles.cache.some(r => this.client.config.staff_roles?.includes(r.id))
+        const member: any = (this.interaction as any).member
+        const roles = member?.roles
+        if(!roles || !this.client.config.staff_roles?.length) return false
+        return Array.isArray(roles)
+            ? roles.some((r: string) => this.client.config.staff_roles!.includes(r))
+            : roles.cache?.some((r: any) => this.client.config.staff_roles!.includes(r.id)) ?? false
     }
 }
