@@ -28,7 +28,6 @@ export default class extends Command {
 
         if(id !== ctx.interaction.user.id && !ctx.is_staff) return ctx.error({error: "You need to be staff to remove other users referrals"})
 
-        await ctx.database.query("DELETE FROM app_referrals WHERE discord_user_id=$1", [id]).catch(console.error) || []
         await ctx.database.query("DELETE FROM device_referrals WHERE discord_user_id=$1", [id]).catch(console.error) || []
 
         return ctx.interaction.reply({content: "All referral links removed", ephemeral: true})
