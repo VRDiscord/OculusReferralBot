@@ -9,11 +9,14 @@ import { handleContexts } from "./handlers/contextHandler";
 import { Pool } from "pg";
 
 const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/
-for (const line of readFileSync(`${process.cwd()}/.env`, 'utf8').split(/[\r\n]/)) {
-    const [, key, value] = line.match(RE_INI_KEY_VAL) || []
-    if (!key) continue
-
-    process.env[key] = value?.trim()
+try {
+    for (const line of readFileSync(`${process.cwd()}/.env`, 'utf8').split(/[\r\n]/)) {
+        const [, key, value] = line.match(RE_INI_KEY_VAL) || []
+        if (!key) continue
+        process.env[key] = value?.trim()
+    }
+} catch {
+    // .env is optional; rely on process.env
 }
 
 const connection = new Pool({
@@ -35,8 +38,6 @@ client.login(process.env["DISCORD_TOKEN"])
 client.on("ready", async () => {
     connection.connect()
     .then(async () => {
-        await connection.query("CREATE TABLE IF NOT EXISTS apps (index SERIAL, app_id VARCHAR(100) PRIMARY KEY, name text not null, platform text not null)")
-        await connection.query("CREATE TABLE IF NOT EXISTS app_referrals (index SERIAL, app_id VARCHAR(100) NOT NULL, user_id VARCHAR(100) NOT NULL, discord_user_id VARCHAR(100) NOT NULL, uses int NOT NULL DEFAULT 0, added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)")
         await connection.query("CREATE TABLE IF NOT EXISTS device_referrals (index SERIAL, user_id VARCHAR(100) PRIMARY KEY, discord_user_id VARCHAR(100) NOT NULL, uses int NOT NULL DEFAULT 0, added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)")
         console.log("Database ready")
     })
@@ -45,7 +46,7 @@ client.on("ready", async () => {
     client.components.loadClasses().catch(console.error)
     client.contexts.loadClasses().catch(console.error)
     client.modals.loadClasses().catch(console.error)
-    client.user?.setPresence({activities: [{type: ActivityType.Watching, name: "your referral links"}], status: PresenceUpdateStatus.DoNotDisturb, })
+    client.user?.setPresence({activities: [{type: ActivityType.Watching, name: "your device referrals"}], status: PresenceUpdateStatus.DoNotDisturb, })
     console.log(`Ready`)
     await client.application?.commands.set([...client.commands.createPostBody(), ...client.contexts.createPostBody()]).catch(console.error)
 })
@@ -62,15 +63,19 @@ client.on("interactionCreate", async (interaction) => {
                     return await handleContexts(interaction, client, connection);
                 }
             }
-        };
+            break;
+        }
         case InteractionType.MessageComponent: {
 			return await handleComponents(interaction, client, connection);
-        };
+        }
         case InteractionType.ApplicationCommandAutocomplete: {
 			return await handleAutocomplete(interaction, client, connection);
-        };
+        }
         case InteractionType.ModalSubmit: {
 			return await handleModals(interaction, client, connection);
-        };
+        }
+        default: {
+            return;
+        }
     }
 })

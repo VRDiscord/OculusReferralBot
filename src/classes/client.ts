@@ -3,7 +3,6 @@ import { Client, ClientOptions } from "discord.js";
 import { readFileSync } from "fs";
 import { Store } from "../stores/store";
 import { Config, StoreTypes } from "../types";
-import { Pool } from "pg";
 
 export class DiscordBotClient extends Client {
 	commands: Store<StoreTypes.COMMANDS>;
@@ -13,8 +12,6 @@ export class DiscordBotClient extends Client {
     config: Config
 	cache: SuperMap<string, any>
 	regexes: {
-		APP_NAME: RegExp,
-		APP_LINK: RegExp,
 		DEVICE_LINK: RegExp
 	}
 
@@ -30,15 +27,17 @@ export class DiscordBotClient extends Client {
 		})
         this.loadConfig()
 		this.regexes = {
-			APP_NAME: /\<title\>(.+) on (Meta|Oculus) (Quest( \d)?|Rift|Go) \| (Oculus|Rift|Quest) VR [gG]ames\<\/title\>/,
-			APP_LINK: /https\:\/\/www\.(oculus|meta)\.com\/appreferrals\/[a-zA-Z0-9_.]+\/\d+\/?/,
 			DEVICE_LINK: /https\:\/\/www\.(oculus|meta)\.com\/referrals\/link\/[a-zA-Z0-9_.]+\/?/
 		}
 	}
 
     loadConfig() {
-        const config = JSON.parse(readFileSync("./config.json").toString())
-        this.config = config as Config
+        try {
+            const config = JSON.parse(readFileSync("./config.json").toString())
+            this.config = config as Config
+        } catch {
+            this.config = {}
+        }
     }
 
 	async getSlashCommandTag(name: string) {
@@ -46,46 +45,6 @@ export class DiscordBotClient extends Client {
 		if(!commands?.size) return `/${name}`
 		else if(commands?.find(c => c.name === name)?.id) return `</${name}:${commands?.find(c => c.name === name)!.id}>`
 		else return `/${name}`
-	}
-
-	async fetchApp(id: string, platform: string, database: Pool) {
-		const app = await database.query("SELECT * FROM apps WHERE app_id=$1", [id]).then(res => res.rows[0]).catch(console.error)
-		if(app?.name && app?.platform) return {name: app.name, platform: app.platform}
-
-		const options = {
-			method: 'GET',
-			'headers': {
-			  	'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-			  	'accept-language': 'en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7',
-			  	'cache-control': 'no-cache',
-			  	'pragma': 'no-cache',
-			  	'sec-ch-ua': ' "\\"Chromium\\";v=\\"116\\", \\"Not)A;Brand\\";v=\\"24\\", \\"Google Chrome\\";v=\\"116\\"",',
-			  	'sec-ch-ua-mobile': '?0',
-			  	'sec-ch-ua-platform': '"Windows\\"',
-			  	'sec-fetch-dest': 'document',
-			  	'sec-fetch-mode': 'navigate',
-			  	'sec-fetch-site': 'none',
-			  	'sec-fetch-user': '?1',
-			  	'upgrade-insecure-requests': '1',
-			  	'Cookie': 'locale=en_US'
-			}
-		}
-
-		if(this.config.dev) console.log(`https://www.oculus.com/experiences/${platform}/${id}`)
-		const f = await fetch(`https://www.oculus.com/experiences/${platform}/${id}`, options);
-		if(this.config.dev) console.log(f)
-		if(f.status !== 200) return null
-		const res = await f.text()
-		if(this.config.dev) console.log(res)
-		if(!res) return;
-		const data = this.regexes.APP_NAME.exec(res)
-		if(this.config.dev) console.log(data)
-		if(!data?.at(1) || !data?.at(3)) return null
-		else await database.query("INSERT INTO apps (app_id, name, platform) VALUES ($1, $2, $3) ON CONFLICT (app_id) DO NOTHING", [id, this.unEscape(data.at(1)), data.at(3)?.toLowerCase()]).catch(console.error)
-		return {
-			name: data?.at(1),
-			platform: data?.at(3)?.toLowerCase()
-		}
 	}
 
 	unEscape(htmlStr?: string) {

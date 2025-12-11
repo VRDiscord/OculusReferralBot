@@ -1,0 +1,83 @@
+OculusReferralBot Smoke Testing (Fresh DB via Docker)
+====================================================
+
+Prereqs
+-------
+- Docker installed and running
+- Node.js >= 20 installed
+- A Discord bot token + application set up with slash commands enabled
+
+1) Start Postgres in Docker
+---------------------------
+Run:
+  docker run --name oculusbot-postgres \
+    -e POSTGRES_PASSWORD=postgres \
+    -e POSTGRES_DB=oculusbot \
+    -p 5432:5432 \
+    -d postgres:16
+
+Optional: verify container is up
+  docker ps
+
+2) Configure environment
+------------------------
+Create a .env file at repo root (copy template.env) with:
+
+  DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
+  DB_USERNAME=postgres
+  DB_PASSWORD=postgres
+  DB_IP=127.0.0.1
+  DB_PORT=5432
+  DB_NAME=oculusbot
+
+3) Configure bot roles
+----------------------
+Copy template.config.json to config.json and edit:
+
+  {
+    "staff_roles": ["YOUR_STAFF_ROLE_ID"],
+    "dev": false
+  }
+
+4) Install and build
+--------------------
+From repo root:
+  npm install
+  npm run build
+
+5) Run the bot
+--------------
+  npm run deploy
+
+Expected logs:
+- "Database ready"
+- "Ready"
+- No TypeScript/runtime errors
+
+6) Discord command checks
+-------------------------
+In a test server where the bot is installed:
+
+1. /savereferral_device url:https://www.oculus.com/referrals/link/<username>/
+   - Should reply "Device referral saved"
+   - Try re-adding the same link -> should say already added
+
+2. /getreferral_device
+   - Should return a valid referral link and increment uses
+
+3. /viewreferrals
+   - Should show only "Devices" section with your saved link(s)
+
+4. /exportreferrals (staff only)
+   - Should attach export.txt with "Devices" table only
+
+5. /deletereferrals (optional user arg)
+   - Should delete the target user's device referrals
+
+7) Cleanup
+----------
+Stop and remove the container:
+  docker rm -f oculusbot-postgres
+
+If you need a clean DB again, re-run step 1.
+

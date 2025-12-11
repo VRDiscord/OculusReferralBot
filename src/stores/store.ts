@@ -35,7 +35,7 @@ export class Store <T extends StoreTypes> {
     async loadClasses(): Promise<SuperMap<string, T extends StoreTypes.COMMANDS ? Command : T extends StoreTypes.COMPONENTS ? Component : T extends StoreTypes.CONTEXTS ? Context : Modal>> {
         if(!this.files_folder) throw new Error("No location for commands given")
         if(!this.checkDirectory()) throw new Error("Unable to find location")
-        const files = readdirSync(join(__dirname, "../", this.files_folder))
+        const files = readdirSync(join(__dirname, "../", this.files_folder)).filter(f => f.endsWith(".js"))
         const map = new SuperMap<string, T extends StoreTypes.COMMANDS ? Command : T extends StoreTypes.COMPONENTS ? Component : T extends StoreTypes.CONTEXTS ? Context : Modal>()
         for (let command_file of files) {
             const command = new (require(join(__dirname, "../", this.files_folder, command_file)).default)() as (T extends StoreTypes.COMMANDS ? Command : T extends StoreTypes.COMPONENTS ? Component : T extends StoreTypes.CONTEXTS ? Context : Modal)
@@ -56,8 +56,8 @@ export class Store <T extends StoreTypes> {
         if(!this.loaded_classes.size) throw new Error("No commands loaded")
         if(this.storetype !== StoreTypes.COMMANDS) throw new Error("Wrong class type loaded")
         let command_name = interaction.commandName
-        if(interaction.options.getSubcommandGroup(false)) command_name += `_${interaction.options.getSubcommandGroup()}`
-        if(interaction.options.getSubcommand(false)) command_name += `_${interaction.options.getSubcommand()}`
+        if(interaction.options.getSubcommandGroup(false)) command_name += `_${interaction.options.getSubcommandGroup(false)}`
+        if(interaction.options.getSubcommand(false)) command_name += `_${interaction.options.getSubcommand(false)}`
 
         const command = this.loaded_classes.get(command_name)
 
