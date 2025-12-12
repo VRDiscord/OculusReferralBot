@@ -22,7 +22,7 @@ export default class extends Command {
             referral = randoms.splice(0, 1)[0]
             const exists = await ctx.client.referralExists(`https://www.oculus.com/referrals/link/${referral.user_id}/`)
             if(!exists) {
-                await ctx.database.query("DELETE FROM device_referrals WHERE user_id=$1 LIMIT 1", [referral.user_id]).catch(console.error)
+                await ctx.database.query("DELETE FROM device_referrals WHERE user_id=$1", [referral.user_id]).catch(console.error)
             } else break;
         }
 
